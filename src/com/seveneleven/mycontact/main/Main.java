@@ -1,11 +1,14 @@
 package com.seveneleven.mycontact.main;
 
 import com.seveneleven.mycontact.user.model.UserType;
-import com.seveneleven.mycontact.user.service.*;
+import com.seveneleven.mycontact.user.model.User;
+import com.seveneleven.mycontact.user.service.UserService;
+import com.seveneleven.mycontact.user.service.UserValidatorService;
 import com.seveneleven.mycontacts.user.repository.*;
 import com.seveneleven.mycontact.auth.session.SessionManager;
 import com.seveneleven.mycontact.auth.service.AuthenticationService;
-import com.seveneleven.mycontact.auth.provider.*;
+import com.seveneleven.mycontact.auth.provider.AuthenticationProvider;
+import com.seveneleven.mycontact.auth.provider.BasicAuthenticationProvider;
 
 import java.util.Scanner;
 
@@ -14,7 +17,6 @@ public class Main {
     public static void main(String[] args) {
 
         UserRepository userRepository = new InMemoryUserRepository();
-
         UserValidatorService validator = new UserValidatorService();
         UserService userService = new UserService(userRepository, validator);
 
@@ -38,8 +40,9 @@ public class Main {
             System.out.println("\n=== MyContacts ===");
             System.out.println("1. Register");
             System.out.println("2. Login");
-            System.out.println("3. Logout");
-            System.out.println("4. Exit");
+            System.out.println("3. Profile");
+            System.out.println("4. Logout");
+            System.out.println("5. Exit");
             System.out.print("Choose option: ");
 
             int choice = scanner.nextInt();
@@ -56,11 +59,15 @@ public class Main {
                     break;
 
                 case 3:
+                    handleProfile(scanner, userService, sessionManager);
+                    break;
+
+                case 4:
                     authService.logout();
                     System.out.println("Logged out successfully.");
                     break;
 
-                case 4:
+                case 5:
                     System.out.println("Goodbye!");
                     return;
 
@@ -128,6 +135,63 @@ public class Main {
             System.out.println("Login successful!");
         } catch (Exception e) {
             System.out.println("Login failed: " + e.getMessage());
+        }
+    }
+
+    private static void handleProfile(Scanner scanner,
+                                      UserService userService,
+                                      SessionManager sessionManager) {
+
+        if (!sessionManager.isLoggedIn()) {
+            System.out.println("You must login first.");
+            return;
+        }
+
+        User currentUser = sessionManager.getCurrentUser();
+
+        System.out.println("\n=== Profile Menu ===");
+        System.out.println("1. View Profile");
+        System.out.println("2. Update Name");
+        System.out.println("3. Change Password");
+        System.out.print("Choose option: ");
+
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        try {
+
+            switch (choice) {
+
+                case 1:
+                    System.out.println("Email: " + currentUser.getEmail());
+                    System.out.println("Name: " + currentUser.getName());
+                    System.out.println("Type: " + currentUser.getUserType());
+                    break;
+
+                case 2:
+                    System.out.print("Enter new name: ");
+                    String newName = scanner.nextLine();
+                    userService.updateName(currentUser, newName);
+                    System.out.println("Name updated successfully.");
+                    break;
+
+                case 3:
+                    System.out.print("Enter old password: ");
+                    String oldPassword = scanner.nextLine();
+
+                    System.out.print("Enter new password: ");
+                    String newPassword = scanner.nextLine();
+
+                    userService.changePassword(currentUser, oldPassword, newPassword);
+                    System.out.println("Password changed successfully.");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice.");
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 }
