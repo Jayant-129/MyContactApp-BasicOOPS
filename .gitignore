@@ -1,0 +1,10 @@
+# Compiled class files
+*.class
+
+# Eclipse project files
+.classpath
+.project
+.settings/
+
+# Compiled output directory
+bin/
