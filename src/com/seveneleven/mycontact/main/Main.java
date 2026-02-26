@@ -1,9 +1,11 @@
 package com.seveneleven.mycontact.main;
 
 import com.seveneleven.mycontact.user.model.UserType;
-import com.seveneleven.mycontact.user.service.UserService;
-import com.seveneleven.mycontact.user.service.UserValidatorService;
+import com.seveneleven.mycontact.user.service.*;
 import com.seveneleven.mycontacts.user.repository.*;
+import com.seveneleven.mycontact.auth.session.SessionManager;
+import com.seveneleven.mycontact.auth.service.AuthenticationService;
+import com.seveneleven.mycontact.auth.provider.*;
 
 import java.util.Scanner;
 
@@ -12,13 +14,22 @@ public class Main {
     public static void main(String[] args) {
 
         UserRepository userRepository = new InMemoryUserRepository();
+
         UserValidatorService validator = new UserValidatorService();
         UserService userService = new UserService(userRepository, validator);
 
-        startConsole(userService);
+        SessionManager sessionManager = new SessionManager();
+        AuthenticationProvider provider =
+                new BasicAuthenticationProvider(userRepository);
+        AuthenticationService authService =
+                new AuthenticationService(provider, sessionManager);
+
+        startConsole(userService, authService, sessionManager);
     }
 
-    private static void startConsole(UserService userService) {
+    private static void startConsole(UserService userService,
+                                     AuthenticationService authService,
+                                     SessionManager sessionManager) {
 
         Scanner scanner = new Scanner(System.in);
 
@@ -26,21 +37,40 @@ public class Main {
 
             System.out.println("\n=== MyContacts ===");
             System.out.println("1. Register");
-            System.out.println("2. Exit");
+            System.out.println("2. Login");
+            System.out.println("3. Logout");
+            System.out.println("4. Exit");
             System.out.print("Choose option: ");
 
             int choice = scanner.nextInt();
-            scanner.nextLine(); // consume newline
+            scanner.nextLine();
 
-            if (choice == 1) {
-                handleRegistration(scanner, userService);
-            } 
-            else if (choice == 2) {
-                System.out.println("Goodbye!");
-                break;
-            } 
-            else {
-                System.out.println("Invalid choice");
+            switch (choice) {
+
+                case 1:
+                    handleRegistration(scanner, userService);
+                    break;
+
+                case 2:
+                    handleLogin(scanner, authService);
+                    break;
+
+                case 3:
+                    authService.logout();
+                    System.out.println("Logged out successfully.");
+                    break;
+
+                case 4:
+                    System.out.println("Goodbye!");
+                    return;
+
+                default:
+                    System.out.println("Invalid choice");
+            }
+
+            if (sessionManager.isLoggedIn()) {
+                System.out.println("Currently Logged In: "
+                        + sessionManager.getCurrentUser().getEmail());
             }
         }
     }
@@ -69,11 +99,9 @@ public class Main {
 
         if (typeChoice == 1) {
             userType = UserType.FREE;
-        } 
-        else if (typeChoice == 2) {
+        } else if (typeChoice == 2) {
             userType = UserType.PREMIUM;
-        } 
-        else {
+        } else {
             System.out.println("Invalid user type selected.");
             return;
         }
@@ -81,9 +109,25 @@ public class Main {
         try {
             userService.register(email, password, name, userType);
             System.out.println("User registered successfully as " + userType + "!");
-        } 
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private static void handleLogin(Scanner scanner,
+                                    AuthenticationService authService) {
+
+        System.out.print("Enter Email: ");
+        String email = scanner.nextLine();
+
+        System.out.print("Enter Password: ");
+        String password = scanner.nextLine();
+
+        try {
+            authService.login(email, password);
+            System.out.println("Login successful!");
+        } catch (Exception e) {
+            System.out.println("Login failed: " + e.getMessage());
         }
     }
 }
