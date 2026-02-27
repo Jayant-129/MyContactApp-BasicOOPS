@@ -158,4 +158,38 @@ public class ContactConsoleHandler {
                 System.out.println("Invalid option.");
         }
     }
+    
+    public void handleDeleteContact(Scanner scanner) {
+
+        if (!sessionManager.isLoggedIn()) {
+            System.out.println("Login first.");
+            return;
+        }
+
+        List<Contact> contacts = contactService.getAllContacts();
+
+        if (contacts.isEmpty()) {
+            System.out.println("No contacts available.");
+            return;
+        }
+
+        for (int i = 0; i < contacts.size(); i++) {
+            System.out.println((i + 1) + ". " + contacts.get(i).getName());
+        }
+
+        System.out.print("Select contact to delete: ");
+        int index = scanner.nextInt();
+        scanner.nextLine();
+
+        if (index < 1 || index > contacts.size()) {
+            System.out.println("Invalid selection.");
+            return;
+        }
+
+        Contact contact = contacts.get(index - 1);
+
+        contactService.deleteContact(contact);
+
+        System.out.println("Contact permanently deleted.");
+    }
 }

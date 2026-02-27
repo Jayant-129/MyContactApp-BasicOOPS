@@ -1,3 +1,10 @@
+/*
+ * MyContactApp - Contact App to store, find, delete contact
+ * @version - 7.0.0
+ * @author - developer
+ */
+
+
 package com.seveneleven.mycontact.main;
 
 import com.seveneleven.mycontact.user.service.*;
