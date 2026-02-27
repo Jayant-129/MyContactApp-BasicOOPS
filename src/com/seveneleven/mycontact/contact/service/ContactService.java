@@ -4,6 +4,7 @@ import com.seveneleven.mycontact.contact.model.*;
 import com.seveneleven.mycontact.contact.repository.ContactRepository;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ContactService {
@@ -98,4 +99,42 @@ public class ContactService {
 
         return result;
     }
+    public List<Contact> filterByType(String type) {
+
+        List<Contact> result = new ArrayList<>();
+
+        for (Contact contact : repository.findAll()) {
+
+            if (contact.getType().equalsIgnoreCase(type)) {
+                result.add(contact);
+            }
+        }
+
+        return result;
+    }
+    public List<Contact> sortByNameAsc() {
+
+        List<Contact> list = new ArrayList<>(repository.findAll());
+
+        list.sort(Comparator.comparing(Contact::getName));
+
+        return list;
+    }
+    public List<Contact> sortByNameDesc() {
+
+        List<Contact> list = new ArrayList<>(repository.findAll());
+
+        list.sort(Comparator.comparing(Contact::getName).reversed());
+
+        return list;
+    }
+    public List<Contact> sortByCreatedTime() {
+
+        List<Contact> list = new ArrayList<>(repository.findAll());
+
+        list.sort(Comparator.comparing(Contact::getCreatedAt));
+
+        return list;
+    }
+    
 }

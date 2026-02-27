@@ -256,4 +256,61 @@ public class ContactConsoleHandler {
             System.out.println("------------------------");
         }
     }
+    public void handleFilterAndSort(Scanner scanner) {
+
+        if (!sessionManager.isLoggedIn()) {
+            System.out.println("Login first.");
+            return;
+        }
+
+        System.out.println("1. Filter by Type");
+        System.out.println("2. Sort by Name (ASC)");
+        System.out.println("3. Sort by Name (DESC)");
+        System.out.println("4. Sort by Created Time");
+
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        List<Contact> results;
+
+        switch (choice) {
+
+            case 1:
+                System.out.print("Enter type (PERSON / ORGANIZATION): ");
+                String type = scanner.nextLine();
+                results = contactService.filterByType(type);
+                break;
+
+            case 2:
+                results = contactService.sortByNameAsc();
+                break;
+
+            case 3:
+                results = contactService.sortByNameDesc();
+                break;
+
+            case 4:
+                results = contactService.sortByCreatedTime();
+                break;
+
+            default:
+                System.out.println("Invalid option.");
+                return;
+        }
+
+        if (results.isEmpty()) {
+            System.out.println("No contacts found.");
+            return;
+        }
+
+        System.out.println("\n=== Results ===");
+
+        for (Contact contact : results) {
+
+            System.out.println("Name: " + contact.getName());
+            System.out.println("Type: " + contact.getType());
+            System.out.println("Created: " + contact.getCreatedAt());
+            System.out.println("---------------------");
+        }
+    }
 }

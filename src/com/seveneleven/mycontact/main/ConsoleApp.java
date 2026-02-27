@@ -53,8 +53,9 @@ public class ConsoleApp {
             System.out.println("10. View Groups");
             System.out.println("11. Search Contact");
             
-            System.out.println("12. Logout");
-            System.out.println("13. Exit");
+            System.out.println("12. Filter & Sort Contacts");
+            System.out.println("13. Logout");
+            System.out.println("14. Exit");
 
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -104,13 +105,16 @@ public class ConsoleApp {
                 case 11:
                     contactHandler.handleSearchContact(scanner);
                     break;
-
+                    
                 case 12:
+                    contactHandler.handleFilterAndSort(scanner);
+                    break;
+                case 13:
                     authService.logout();
                     System.out.println("Logged out successfully.");
                     break;
 
-                case 13:
+                case 14:
                     System.out.println("Goodbye!");
                     return;
 
