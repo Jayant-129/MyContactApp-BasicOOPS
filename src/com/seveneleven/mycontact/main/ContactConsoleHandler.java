@@ -1,0 +1,97 @@
+package com.seveneleven.mycontact.main;
+
+import com.seveneleven.mycontact.contact.model.*;
+import com.seveneleven.mycontact.contact.service.ContactService;
+import com.seveneleven.mycontact.auth.session.SessionManager;
+
+import java.util.*;
+
+public class ContactConsoleHandler {
+
+    private final ContactService contactService;
+    private final SessionManager sessionManager;
+
+    public ContactConsoleHandler(ContactService contactService,
+                                 SessionManager sessionManager) {
+        this.contactService = contactService;
+        this.sessionManager = sessionManager;
+    }
+
+    public void handleCreateContact(Scanner scanner) {
+
+        if (!sessionManager.isLoggedIn()) {
+            System.out.println("Login first.");
+            return;
+        }
+
+        System.out.print("Contact Name: ");
+        String name = scanner.nextLine();
+
+        System.out.println("1. PERSON");
+        System.out.println("2. ORGANIZATION");
+
+        int typeChoice = scanner.nextInt();
+        scanner.nextLine();
+
+        List<PhoneNumber> phones = new ArrayList<>();
+        List<EmailAddress> emails = new ArrayList<>();
+
+        System.out.print("Phone: ");
+        phones.add(new PhoneNumber(scanner.nextLine()));
+
+        System.out.print("Email: ");
+        emails.add(new EmailAddress(scanner.nextLine()));
+
+        if (typeChoice == 1) {
+            contactService.createContact(name, "PERSON", phones, emails);
+        } else {
+            contactService.createContact(name, "ORGANIZATION", phones, emails);
+        }
+
+        System.out.println("Contact created.");
+    }
+
+    // ===== UC5 BASIC VIEW =====
+    public void handleViewContacts(Scanner scanner) {
+
+        if (!sessionManager.isLoggedIn()) {
+            System.out.println("Login first.");
+            return;
+        }
+
+        List<Contact> contacts = contactService.getAllContacts();
+
+        if (contacts.isEmpty()) {
+            System.out.println("No contacts found.");
+            return;
+        }
+
+        for (int i = 0; i < contacts.size(); i++) {
+            System.out.println((i + 1) + ". " + contacts.get(i).getName());
+        }
+
+        System.out.print("Select contact: ");
+        int index = scanner.nextInt();
+        scanner.nextLine();
+
+        if (index < 1 || index > contacts.size()) {
+            System.out.println("Invalid selection.");
+            return;
+        }
+
+        Contact contact = contacts.get(index - 1);
+
+        System.out.println("Name: " + contact.getName());
+        System.out.println("Type: " + contact.getType());
+
+        System.out.println("Phones:");
+        for (PhoneNumber p : contact.getPhoneNumbers()) {
+            System.out.println(" - " + p.getNumber());
+        }
+
+        System.out.println("Emails:");
+        for (EmailAddress e : contact.getEmailAddresses()) {
+            System.out.println(" - " + e.getEmail());
+        }
+    }
+}
