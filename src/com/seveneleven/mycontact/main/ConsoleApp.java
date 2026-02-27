@@ -51,11 +51,10 @@ public class ConsoleApp {
             System.out.println("8. Create Group");
             System.out.println("9. Add Contact to Group");
             System.out.println("10. View Groups");
-
-            System.out.println("11. Logout");
-            System.out.println("12. Exit");
-
-            System.out.print("Choose option: ");
+            System.out.println("11. Search Contact");
+            
+            System.out.println("12. Logout");
+            System.out.println("13. Exit");
 
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -101,13 +100,17 @@ public class ConsoleApp {
                 case 10:
                     groupHandler.handleViewGroups();
                     break;
-
+                    
                 case 11:
+                    contactHandler.handleSearchContact(scanner);
+                    break;
+
+                case 12:
                     authService.logout();
                     System.out.println("Logged out successfully.");
                     break;
 
-                case 12:
+                case 13:
                     System.out.println("Goodbye!");
                     return;
 

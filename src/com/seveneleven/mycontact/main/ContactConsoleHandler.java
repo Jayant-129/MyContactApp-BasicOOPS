@@ -192,4 +192,68 @@ public class ContactConsoleHandler {
 
         System.out.println("Contact permanently deleted.");
     }
+    public void handleSearchContact(Scanner scanner) {
+
+        if (!sessionManager.isLoggedIn()) {
+            System.out.println("Login first.");
+            return;
+        }
+
+        System.out.println("Search by:");
+        System.out.println("1. Name");
+        System.out.println("2. Phone");
+        System.out.println("3. Email");
+
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Enter search keyword: ");
+        String keyword = scanner.nextLine();
+
+        List<Contact> results;
+
+        switch (choice) {
+
+            case 1:
+                results = contactService.searchByName(keyword);
+                break;
+
+            case 2:
+                results = contactService.searchByPhone(keyword);
+                break;
+
+            case 3:
+                results = contactService.searchByEmail(keyword);
+                break;
+
+            default:
+                System.out.println("Invalid option.");
+                return;
+        }
+
+        if (results.isEmpty()) {
+            System.out.println("No contacts found.");
+            return;
+        }
+
+        System.out.println("\n=== Search Results ===");
+
+        for (Contact contact : results) {
+
+            System.out.println("Name: " + contact.getName());
+            System.out.println("Type: " + contact.getType());
+
+            System.out.println("Phones:");
+            for (PhoneNumber p : contact.getPhoneNumbers()) {
+                System.out.println(" - " + p.getNumber());
+            }
+
+            System.out.println("Emails:");
+            for (EmailAddress e : contact.getEmailAddresses()) {
+                System.out.println(" - " + e.getEmail());
+            }
+
+            System.out.println("------------------------");
+        }
+    }
 }

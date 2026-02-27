@@ -3,6 +3,7 @@ package com.seveneleven.mycontact.contact.service;
 import com.seveneleven.mycontact.contact.model.*;
 import com.seveneleven.mycontact.contact.repository.ContactRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ContactService {
@@ -50,5 +51,51 @@ public class ContactService {
     
     public void deleteContact(Contact contact) {
         repository.delete(contact.getId());
+    }
+    public List<Contact> searchByName(String keyword) {
+
+        List<Contact> result = new ArrayList<>();
+
+        for (Contact contact : repository.findAll()) {
+            if (contact.getName().toLowerCase()
+                    .contains(keyword.toLowerCase())) {
+                result.add(contact);
+            }
+        }
+
+        return result;
+    }
+    public List<Contact> searchByPhone(String keyword) {
+
+        List<Contact> result = new ArrayList<>();
+
+        for (Contact contact : repository.findAll()) {
+
+            for (PhoneNumber phone : contact.getPhoneNumbers()) {
+                if (phone.getNumber().contains(keyword)) {
+                    result.add(contact);
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+    public List<Contact> searchByEmail(String keyword) {
+
+        List<Contact> result = new ArrayList<>();
+
+        for (Contact contact : repository.findAll()) {
+
+            for (EmailAddress email : contact.getEmailAddresses()) {
+                if (email.getEmail().toLowerCase()
+                        .contains(keyword.toLowerCase())) {
+                    result.add(contact);
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
 }

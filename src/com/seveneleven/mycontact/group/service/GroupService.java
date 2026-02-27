@@ -1,9 +1,10 @@
 package com.seveneleven.mycontact.group.service;
 
 import com.seveneleven.mycontact.group.model.Group;
-import com.seveneleven.mycontact.group.repository.GroupRepository;
+import com.seveneleven.mycontact.group.repository.*;
 import com.seveneleven.mycontact.contact.model.Contact;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GroupService {
@@ -26,4 +27,5 @@ public class GroupService {
     public void addContactToGroup(Group group, Contact contact) {
         group.getContacts().add(contact);
     }
+    
 }
