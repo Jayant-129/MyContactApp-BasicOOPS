@@ -10,7 +10,11 @@ import com.seveneleven.mycontact.auth.service.AuthenticationService;
 import com.seveneleven.mycontact.auth.provider.AuthenticationProvider;
 import com.seveneleven.mycontact.auth.provider.BasicAuthenticationProvider;
 
-import java.util.Scanner;
+import com.seveneleven.mycontact.contact.model.*;
+import com.seveneleven.mycontact.contact.repository.*;
+import com.seveneleven.mycontact.contact.service.ContactService;
+
+import java.util.*;
 
 public class Main {
 
@@ -26,12 +30,16 @@ public class Main {
         AuthenticationService authService =
                 new AuthenticationService(provider, sessionManager);
 
-        startConsole(userService, authService, sessionManager);
+        ContactRepository contactRepository = new InMemoryContactRepository();
+        ContactService contactService = new ContactService(contactRepository);
+
+        startConsole(userService, authService, sessionManager, contactService);
     }
 
     private static void startConsole(UserService userService,
                                      AuthenticationService authService,
-                                     SessionManager sessionManager) {
+                                     SessionManager sessionManager,
+                                     ContactService contactService) {
 
         Scanner scanner = new Scanner(System.in);
 
@@ -41,8 +49,9 @@ public class Main {
             System.out.println("1. Register");
             System.out.println("2. Login");
             System.out.println("3. Profile");
-            System.out.println("4. Logout");
-            System.out.println("5. Exit");
+            System.out.println("4. Create Contact");
+            System.out.println("5. Logout");
+            System.out.println("6. Exit");
             System.out.print("Choose option: ");
 
             int choice = scanner.nextInt();
@@ -63,11 +72,15 @@ public class Main {
                     break;
 
                 case 4:
+                    handleCreateContact(scanner, contactService, sessionManager);
+                    break;
+
+                case 5:
                     authService.logout();
                     System.out.println("Logged out successfully.");
                     break;
 
-                case 5:
+                case 6:
                     System.out.println("Goodbye!");
                     return;
 
@@ -81,6 +94,7 @@ public class Main {
             }
         }
     }
+
 
     private static void handleRegistration(Scanner scanner,
                                            UserService userService) {
@@ -97,25 +111,17 @@ public class Main {
         System.out.println("Select User Type:");
         System.out.println("1. FREE");
         System.out.println("2. PREMIUM");
-        System.out.print("Enter choice: ");
 
         int typeChoice = scanner.nextInt();
         scanner.nextLine();
 
-        UserType userType;
-
-        if (typeChoice == 1) {
-            userType = UserType.FREE;
-        } else if (typeChoice == 2) {
-            userType = UserType.PREMIUM;
-        } else {
-            System.out.println("Invalid user type selected.");
-            return;
-        }
+        UserType userType = (typeChoice == 1)
+                ? UserType.FREE
+                : UserType.PREMIUM;
 
         try {
             userService.register(email, password, name, userType);
-            System.out.println("User registered successfully as " + userType + "!");
+            System.out.println("User registered successfully!");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -153,7 +159,6 @@ public class Main {
         System.out.println("1. View Profile");
         System.out.println("2. Update Name");
         System.out.println("3. Change Password");
-        System.out.print("Choose option: ");
 
         int choice = scanner.nextInt();
         scanner.nextLine();
@@ -193,5 +198,48 @@ public class Main {
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
+    }
+
+
+    private static void handleCreateContact(Scanner scanner,
+            ContactService contactService,
+            SessionManager sessionManager) {
+
+    	if (!sessionManager.isLoggedIn()) {
+    		System.out.println("You must login first.");
+    		return;
+    	}
+
+    	System.out.print("Enter Contact Name: ");
+    	String name = scanner.nextLine();
+
+    	System.out.println("Select Contact Type:");
+    	System.out.println("1. PERSON");
+    	System.out.println("2. ORGANIZATION");
+
+    	int typeChoice = scanner.nextInt();
+    	scanner.nextLine();
+
+    	List<PhoneNumber> phones = new ArrayList<>();
+    	List<EmailAddress> emails = new ArrayList<>();
+
+    	System.out.print("Enter Phone Number: ");
+    	phones.add(new PhoneNumber(scanner.nextLine()));
+
+    	System.out.print("Enter Email: ");
+    	emails.add(new EmailAddress(scanner.nextLine()));
+
+    	if (typeChoice == 1) {
+    		contactService.createContact(name,"PERSON", phones, emails);
+    	} 
+    	else if (typeChoice == 2) {
+    		contactService.createContact(name, "ORGANIZATION", phones, emails);
+    	} 
+    	else {
+    		System.out.println("Invalid contact type.");
+    		return;
+    	}
+
+    	System.out.println("Contact created successfully.");
     }
 }

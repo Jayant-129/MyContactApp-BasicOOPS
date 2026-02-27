@@ -1,6 +1,5 @@
 package com.seveneleven.mycontact.user.service;
 
-import java.util.Optional;
 
 import com.seveneleven.mycontact.user.model.User;
 import com.seveneleven.mycontact.user.model.UserType;
@@ -20,9 +19,7 @@ public class UserService {
         this.validator = validator;
     }
 
-    // =========================
-    // UC1 - Registration
-    // =========================
+
     public User register(String email,
                          String password,
                          String name,
@@ -48,16 +45,13 @@ public class UserService {
         return user;
     }
 
-    // =========================
-    // UC3 - View User
-    // =========================
+
     public User getUserByEmail(String email) {
         return repository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
 
-    // UC3 - Update Name
 
     public void updateName(User user, String newName) {
 
@@ -68,7 +62,7 @@ public class UserService {
         user.updateName(newName);
     }
 
-    // UC3 - Change Password
+
     public void changePassword(User user,
                                String oldPassword,
                                String newPassword) {
