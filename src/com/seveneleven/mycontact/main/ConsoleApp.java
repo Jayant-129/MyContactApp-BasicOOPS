@@ -37,8 +37,9 @@ public class ConsoleApp {
             System.out.println("3. Profile");
             System.out.println("4. Create Contact");
             System.out.println("5. View Contacts");
-            System.out.println("6. Logout");
-            System.out.println("7. Exit");
+            System.out.println("6. Edit Contact");
+            System.out.println("7. Logout");
+            System.out.println("8. Exit");
 
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -64,13 +65,16 @@ public class ConsoleApp {
                 case 5:
                     contactHandler.handleViewContacts(scanner);
                     break;
-
                 case 6:
+                    contactHandler.handleEditContact(scanner);
+                    break;
+
+                case 7:
                     authService.logout();
                     System.out.println("Logged out successfully.");
                     break;
 
-                case 7:
+                case 8:
                     System.out.println("Goodbye!");
                     return;
 

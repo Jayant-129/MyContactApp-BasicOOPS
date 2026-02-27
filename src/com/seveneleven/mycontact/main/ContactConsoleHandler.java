@@ -94,4 +94,68 @@ public class ContactConsoleHandler {
             System.out.println(" - " + e.getEmail());
         }
     }
+    
+    public void handleEditContact(Scanner scanner) {
+
+        if (!sessionManager.isLoggedIn()) {
+            System.out.println("Login first.");
+            return;
+        }
+
+        List<Contact> contacts = contactService.getAllContacts();
+
+        if (contacts.isEmpty()) {
+            System.out.println("No contacts available.");
+            return;
+        }
+
+        for (int i = 0; i < contacts.size(); i++) {
+            System.out.println((i + 1) + ". " + contacts.get(i).getName());
+        }
+
+        System.out.print("Select contact to edit: ");
+        int index = scanner.nextInt();
+        scanner.nextLine();
+
+        if (index < 1 || index > contacts.size()) {
+            System.out.println("Invalid selection.");
+            return;
+        }
+
+        Contact contact = contacts.get(index - 1);
+
+        System.out.println("1. Update Name");
+        System.out.println("2. Add Phone");
+        System.out.println("3. Add Email");
+
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        switch (choice) {
+
+            case 1:
+                System.out.print("Enter new name: ");
+                String newName = scanner.nextLine();
+                contactService.updateContactName(contact, newName);
+                System.out.println("Name updated.");
+                break;
+
+            case 2:
+                System.out.print("Enter new phone: ");
+                String phone = scanner.nextLine();
+                contactService.addPhone(contact, phone);
+                System.out.println("Phone added.");
+                break;
+
+            case 3:
+                System.out.print("Enter new email: ");
+                String email = scanner.nextLine();
+                contactService.addEmail(contact, email);
+                System.out.println("Email added.");
+                break;
+
+            default:
+                System.out.println("Invalid option.");
+        }
+    }
 }

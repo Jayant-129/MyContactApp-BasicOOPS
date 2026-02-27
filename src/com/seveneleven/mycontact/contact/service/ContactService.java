@@ -21,12 +21,27 @@ public class ContactService {
         Contact contact;
 
         if (type.equalsIgnoreCase("PERSON")) {
-            contact = new PersonContact(name, phones, emails);
+           contact = new PersonContact(name, phones, emails);
         } else {
             contact = new OrganizationContact(name, phones, emails);
         }
 
         repository.save(contact);
+    }
+    
+    public void updateContactName(Contact contact, String newName) {
+        if (newName == null || newName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be empty.");
+        }
+        contact.setName(newName);
+    }
+
+    public void addPhone(Contact contact, String phone) {
+        contact.getPhoneNumbers().add(new PhoneNumber(phone));
+    }
+
+    public void addEmail(Contact contact, String email) {
+        contact.getEmailAddresses().add(new EmailAddress(email));
     }
 
     public List<Contact> getAllContacts() {
