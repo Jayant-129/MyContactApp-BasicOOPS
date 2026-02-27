@@ -47,4 +47,8 @@ public class ContactService {
     public List<Contact> getAllContacts() {
         return repository.findAll();
     }
+    
+    public void deleteContact(Contact contact) {
+        repository.delete(contact.getId());
+    }
 }
