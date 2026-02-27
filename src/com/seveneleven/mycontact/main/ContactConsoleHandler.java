@@ -51,7 +51,7 @@ public class ContactConsoleHandler {
         System.out.println("Contact created.");
     }
 
-    // ===== UC5 BASIC VIEW =====
+    // UC5 BASIC VIEW
     public void handleViewContacts(Scanner scanner) {
 
         if (!sessionManager.isLoggedIn()) {
